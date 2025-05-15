@@ -2,9 +2,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 paramPais = ""
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -49,3 +58,8 @@ def saludo(pais: str):
     ani.save(nameImage, writer="pillow", fps=5)
     return {"mensaje": f"Grafico Generado para el {pais}"}
  
+@app.get("/paises")
+def paises():
+    df = pd.read_csv("01 renewable-share-energy.csv")    
+    paises = df["Entity"].unique()
+    return paises.tolist()
